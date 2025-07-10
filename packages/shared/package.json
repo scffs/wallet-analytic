@@ -5,6 +5,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "bun build src/index.ts --outdir dist --format esm",
     "format": "biome format web --write",
     "checkAll": "biome check web --write --unsafe"
   },

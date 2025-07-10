@@ -4,12 +4,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "biome format . --write",
-    "dev": "bun run --watch src/index.ts"
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run dist/index.js"
   },
   "dependencies": {
-    "elysia": "latest",
+    "@wallet-analytic/db": "workspace:*",
     "@wallet-analytic/shared": "workspace:*",
     "@wallet-analytic/ton-client": "workspace:*",
-    "@wallet-analytic/db": "workspace:*"
+    "effect": "^3.16.12",
+    "elysia": "latest"
   }
 }

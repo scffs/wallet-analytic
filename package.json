@@ -4,11 +4,12 @@
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "bun run --filter=@wallet-analytic/web dev & bun run --filter=@wallet-analytic/api dev && bun run --filter=@wallet-analytic/bot dev",
-    "docker:rebuild": "docker compose -f docker-compose.dev.yml down -v && docker compose -f docker-compose.dev.yml up --build",
-    "build:tsc": "tsc --build",
+    "dev": "bunx concurrently -n web,api,bot -c blue,green,magenta \"bun run --filter=@wallet-analytic/web dev\" \"bun run --filter=@wallet-analytic/api dev\" \"bun run --filter=@wallet-analytic/bot dev\"",
 
-    "build": "bun run --filter=@wallet-analytic/web build && bun run --filter=@wallet-analytic/api build && bun run --filter=@wallet-analytic/bot build",
+    "docker:rebuild": "docker compose -f docker-compose.dev.yml down -v && docker compose -f docker-compose.dev.yml up --build",
+
+    "build:tsc": "tsc --build",
+    "build": "bunx concurrently -n web,api,bot -c blue,green,magenta \"bun run --filter=@wallet-analytic/web build\" \"bun run --filter=@wallet-analytic/api build\" \"bun run --filter=@wallet-analytic/bot build\"",
 
     "test": "bun test --recursive",
     "test:watch": "bun test --watch --recursive",
@@ -22,8 +23,9 @@
     "checkAll": "biome check . --write --unsafe"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/bun": "latest",
-    "@biomejs/biome": "^1.9.4"
+    "concurrently": "^9.2.0"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
