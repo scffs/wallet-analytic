@@ -22,8 +22,14 @@ const app = new Elysia()
   })
   .get('/health', 'Hello Elysia')
   .use(authModule)
-  .listen(env.APP_PORT)
+  .listen({
+    port: env.APP_PORT,
+    // tls: {
+    //   key: Bun.file("./key.pem"),
+    //   cert: Bun.file("./cert.pem"),
+    // }
+  })
 
-console.log(`🦊 Server running at ${app.server?.hostname}:${app.server?.port}`)
+console.log(`🦊 Server running at ${app.server?.url}`)
 
 export type App = typeof app

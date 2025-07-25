@@ -1,13 +1,9 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  const auth = useAuthStore()
-
   if (to.meta.public) {
     return
   }
 
-  if (!auth.initialized) {
-    await auth.initialize()
-  }
+  const auth = useAuthStore()
 
   if (!auth.isAuthenticated) {
     if (to.path !== '/') {

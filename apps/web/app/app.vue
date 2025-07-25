@@ -1,40 +1,63 @@
 <template>
-  <div class="relative min-h-screen">
-    <AppLoader
-        v-if="showLoader"
-        :blocking="true"
-        text="App is loading..."
+  <UApp>
+    <AppLoader v-if="showLoader" />
+
+    <AppAuthErrorPage
+        v-else-if="auth.error"
+        :error="auth.error"
+        @retry="retryAuth"
     />
 
-    <ClientOnly>
-      <template v-if="!showLoader && !auth.error">
-        <NuxtLayout>
-          <NuxtPage />
-        </NuxtLayout>
-      </template>
+    <AppAuthErrorPage
+        v-else-if="hasError"
+    />
+
+    <ClientOnly v-else>
+      <NuxtLayout>
+        <div class="w-full overflow-hidden">
+          <div class="h-full w-full overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]">
+            <div class="[&::-webkit-scrollbar]:hidden">
+              <NuxtPage />
+            </div>
+          </div>
+        </div>
+      </NuxtLayout>
     </ClientOnly>
-  </div>
+  </UApp>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { postEvent, targetOrigin } from '@telegram-apps/sdk-vue'
-
-import AppLoader from '~/components/ui/AppLoader.vue'
+import { init } from '~/core/init'
 
 const auth = useAuthStore()
 const isLoading = ref(true)
+const hasError = ref(false)
 
 const showLoader = computed(() => auth.loading || isLoading.value)
 
-onMounted(async () => {
+const retryAuth = async () => {
+  isLoading.value = true
   try {
-    targetOrigin.set('https://tgl.mini-apps.store')
-    postEvent('web_app_ready')
+    await auth.initialize()
+  } finally {
+    isLoading.value = false
+  }
+}
+const hasInitialized = ref(false)
 
+onMounted(async () => {
+  if (hasInitialized.value) {
+    return
+  }
+
+  hasInitialized.value = true
+
+  try {
+    await init()
     await auth.initialize()
   } catch (error) {
-    console.error('initialize error:', error)
+    hasError.value = true
+    console.error('Initialization failed:', error)
   } finally {
     isLoading.value = false
   }
@@ -42,13 +65,12 @@ onMounted(async () => {
 </script>
 
 <style>
-.page-enter-active,
-.page-leave-active {
-  transition: all 0.4s;
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-  filter: blur(1rem);
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 </style>

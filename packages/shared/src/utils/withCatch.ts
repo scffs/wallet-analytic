@@ -5,6 +5,7 @@ export const withCatch = <T>(
     const res = fn()
     return [res]
   } catch (e) {
+    console.log('withCatch error', e)
     return [undefined, e]
   }
 }
